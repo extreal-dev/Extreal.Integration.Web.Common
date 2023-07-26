@@ -1,1 +1,1 @@
-# Extreal.Integration.WebGL
+# Extreal.Integration.Web.Common
