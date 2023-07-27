@@ -1,0 +1,18 @@
+{
+    "name": "Extreal.Integration.Web.Common",
+    "rootNamespace": "Extreal.Integration.Web.Common",
+    "references": [],
+    "includePlatforms": [
+        "WebGL"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "System.Text.Json.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
