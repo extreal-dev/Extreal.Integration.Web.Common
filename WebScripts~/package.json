@@ -1,6 +1,6 @@
 {
   "name": "@extreal-dev/extreal.integration.web.common",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "scripts": {
     "dev": "rollup --config rollup.config.ts --configPlugin typescript --watch",
     "prod": "rollup --config rollup.config.ts --configPlugin typescript --environment BUILD:production"
@@ -19,7 +19,7 @@
   "author": {
     "name": "TIS Inc."
   },
-  "license": "Apache License, Version 2.0",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-terser": "^0.4.3",
