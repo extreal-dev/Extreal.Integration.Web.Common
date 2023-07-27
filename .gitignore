@@ -73,6 +73,6 @@ crashlytics-build.properties
 
 # npm
 WebScripts/dist
-WebScripts/types
+WebScripts/dist.meta
 node_modules
 node_modules.meta
