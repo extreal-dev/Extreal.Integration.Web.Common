@@ -2,9 +2,7 @@
     "name": "Extreal.Integration.Web.Common",
     "rootNamespace": "Extreal.Integration.Web.Common",
     "references": [],
-    "includePlatforms": [
-        "WebGL"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
