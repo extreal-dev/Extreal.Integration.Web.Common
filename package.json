@@ -8,5 +8,11 @@
   },
   "dependencies": {
     "jp.co.tis.extreal.core.logging": "1.2.0-next.1"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "MVS",
+      "path": "Samples~/MVS"
+    }
+  ]
 }
