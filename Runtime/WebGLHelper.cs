@@ -9,10 +9,10 @@ namespace Extreal.Integration.Web.Common
     public static class WebGLHelper
     {
         public static void Initialize(WebGLHelperConfig webGLHelperConfig = null)
-            => Nop(JsonSerializer.Serialize(webGLHelperConfig ?? new WebGLHelperConfig() { IsDebug = false }));
+            => Nop(JsonSerializer.Serialize(webGLHelperConfig ?? new WebGLHelperConfig { IsDebug = false }));
 
         [DllImport("__Internal")]
-        private static extern void Nop(string str);
+        public static extern void Nop(string str);
 
         [DllImport("__Internal")]
         public static extern void CallAction(string name, string str1 = "", string str2 = "");
