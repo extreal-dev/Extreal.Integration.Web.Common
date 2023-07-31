@@ -5,7 +5,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Extreal.Integration.Web.Common.MVS.TextChatScreen
+namespace Extreal.Integration.Web.Common.MVS.TestScreen
 {
     public class TestScreenView : MonoBehaviour
     {

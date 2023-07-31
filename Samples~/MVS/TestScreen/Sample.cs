@@ -3,7 +3,7 @@ using AOT;
 using Extreal.Core.Common.System;
 using UniRx;
 
-namespace Extreal.Integration.Web.Common.MVS.TextChatScreen
+namespace Extreal.Integration.Web.Common.MVS.TestScreen
 {
     public class Sample : DisposableBase
     {

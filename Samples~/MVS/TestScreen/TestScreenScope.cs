@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 using VContainer;
 using VContainer.Unity;
 
-namespace Extreal.Integration.Web.Common.MVS.TextChatScreen
+namespace Extreal.Integration.Web.Common.MVS.TestScreen
 {
     public class TestScreenScope : LifetimeScope
     {
-        [FormerlySerializedAs("textChatScreenView")] [SerializeField] private TestScreenView testScreenView;
+        [SerializeField] private TestScreenView testScreenView;
 
         protected override void Configure(IContainerBuilder builder)
         {
