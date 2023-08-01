@@ -22,7 +22,11 @@ type Helper = {
     UTF8ToString: (ptr: Pointer) => string;
 };
 
+/**
+ * Debug or not.
+ */
 let isDebug: boolean;
+
 let helper: Helper;
 const boundMethods = new Map<string, BindMethod>();
 
@@ -119,10 +123,33 @@ bindMethod("AddCallback", (namePtr: Pointer, callbackPtr: Pointer) => {
     });
 });
 
-const addAction = (name: string, action: Action) => actions.set(name, action);
+/**
+ * Adds a function without a return value.
+ * 
+ * @param name - Target
+ * @param action - Function
+ */
+const addAction = (name: string, action: Action) => {
+    actions.set(name, action);
+};
 
-const addFunction = (name: string, func: Function) => functions.set(name, func);
+/**
+ * Adds a function with a return value.
+ * 
+ * @param name - Target
+ * @param func - Function
+ */
+const addFunction = (name: string, func: Function) => {
+    functions.set(name, func);
+};
 
+/**
+ * Callbacks.
+ * 
+ * @param name - Target
+ * @param strParam1 - First string parameter
+ * @param strParam2 - Second string parameter
+ */
 const callback = (name: string, strParam1?: string, strParam2?: string) => {
     const cb = callbacks.get(name);
     if (!cb) {
@@ -134,6 +161,14 @@ const callback = (name: string, strParam1?: string, strParam2?: string) => {
     cb(strParam1 ?? UNUSED, strParam2 ?? UNUSED);
 };
 
+/**
+ * Waits until the condition is satisfied.
+ * 
+ * @param condition - Condition
+ * @param cancel - Function to determine whether to cancel
+ * @param interval - Interval to be checked(milliseconds)
+ * @returns Promise
+ */
 const waitUntil = (condition: () => boolean, cancel: () => boolean, interval = 100) => {
     return new Promise<void>((resolve, reject) => {
         const checkCondition = () => {
@@ -147,6 +182,11 @@ const waitUntil = (condition: () => boolean, cancel: () => boolean, interval = 1
     });
 };
 
+/**
+ * Determines if it is an AsynFunction.
+ * 
+ * @param func - Function
+ */
 const isAsync = (func: object) => {
     return typeof func === "function" && Object.prototype.toString.call(func) === "[object AsyncFunction]";
 };
