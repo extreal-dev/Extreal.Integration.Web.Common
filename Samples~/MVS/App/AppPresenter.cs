@@ -11,6 +11,6 @@ namespace Extreal.Integration.Web.Common.MVS.App
             => this.stageNavigator = stageNavigator;
 
         public void Start()
-            => stageNavigator.ReplaceAsync(StageName.TestStage);
+            => stageNavigator.ReplaceAsync(StageName.TestStage).Forget();
     }
 }
