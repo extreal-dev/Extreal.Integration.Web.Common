@@ -183,7 +183,7 @@ const waitUntil = (condition: () => boolean, cancel: () => boolean, interval = 1
 };
 
 /**
- * Determines if it is an AsynFunction.
+ * Determines if it is an AsyncFunction.
  * 
  * @param func - Function
  */
