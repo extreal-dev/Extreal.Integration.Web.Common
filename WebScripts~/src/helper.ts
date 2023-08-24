@@ -6,7 +6,7 @@ type CallbackMethod = (namePtr: Pointer, callbackPtr: Pointer) => void;
 type BindMethod = ActionMethod | FunctionMethod | CallbackMethod;
 
 type Module = {
-    _malloc(size: number): Pointer;
+    _malloc: (size: number) => Pointer;
     _free(ptr: Pointer): void;
     dynCall_vii(funcPtr: Pointer, buf1: Pointer, buf2: Pointer): void;
 };
