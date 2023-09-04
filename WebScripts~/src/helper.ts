@@ -7,8 +7,8 @@ type BindMethod = ActionMethod | FunctionMethod | CallbackMethod;
 
 type Module = {
     _malloc: (size: number) => Pointer;
-    _free(ptr: Pointer): void;
-    dynCall_vii(funcPtr: Pointer, buf1: Pointer, buf2: Pointer): void;
+    _free: (ptr: Pointer) => void;
+    dynCall_vii: (funcPtr: Pointer, buf1: Pointer, buf2: Pointer) => void;
 };
 
 type HelperConfig = {
