@@ -1,0 +1,23 @@
+{
+    "name": "Extreal.Integration.Web.Common.MVS",
+    "rootNamespace": "Extreal.Integration.Web.Common.MVS",
+    "references": [
+        "Unity.TextMeshPro",
+        "UniTask",
+        "UniRx",
+        "VContainer",
+        "Extreal.Core.Logging",
+        "Extreal.Core.Common",
+        "Extreal.Core.StageNavigation",
+        "Extreal.Integration.Web.Common"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

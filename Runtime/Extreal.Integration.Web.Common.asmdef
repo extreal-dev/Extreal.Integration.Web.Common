@@ -1,0 +1,14 @@
+{
+    "name": "Extreal.Integration.Web.Common",
+    "rootNamespace": "Extreal.Integration.Web.Common",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

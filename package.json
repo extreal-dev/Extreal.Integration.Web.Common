@@ -1,0 +1,17 @@
+﻿{
+  "name": "jp.co.tis.extreal.integration.web.common",
+  "version": "1.0.0-next.2",
+  "displayName": "Extreal.Integration.Web.Common",
+  "unity": "2022.3",
+  "author": {
+    "name": "TIS Inc."
+  },
+  "dependencies": {
+  },
+  "samples": [
+    {
+      "displayName": "MVS",
+      "path": "Samples~/MVS"
+    }
+  ]
+}
