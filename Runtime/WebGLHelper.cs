@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_WEBGL && !UNITY_EDITOR
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -62,3 +63,4 @@ namespace Extreal.Integration.Web.Common
         public bool IsDebug { get; set; }
     }
 }
+#endif
