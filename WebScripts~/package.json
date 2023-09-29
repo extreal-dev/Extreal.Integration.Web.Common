@@ -1,8 +1,8 @@
 {
   "name": "@extreal-dev/extreal.integration.web.common",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "scripts": {
-    "dev": "rollup --config rollup.config.ts --configPlugin typescript --watch",
+    "dev": "rollup --config rollup.config.ts --configPlugin typescript",
     "prod": "rollup --config rollup.config.ts --configPlugin typescript --environment BUILD:production"
   },
   "main": "dist/index.js",
