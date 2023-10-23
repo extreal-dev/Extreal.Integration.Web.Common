@@ -21,4 +21,5 @@
 - Open `Build Settings` and change the platform to `WebGL`.
 - Select `Dev` from `Player Settings > Resolution and Presentation > WebGL Template`.
 - Add all scenes in MVS to `Scenes In Build`.
-- Run from `Build And Run`.
+- Play
+   - See [README](https://github.com/extreal-dev/Extreal.Dev/blob/main/WebGLBuild/README.md) to run WebGL application in local environment.
