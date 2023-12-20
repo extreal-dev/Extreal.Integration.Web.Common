@@ -83,6 +83,8 @@ const actions = new Map<string, Action>();
 const functions = new Map<string, Function>();
 const callbacks = new Map<string, Callback>();
 
+const traceLogSuppressedNames = new Set<string>();
+
 const UNUSED = "";
 
 bindMethod("CallAction", (namePtr: Pointer, strParamPtr1: Pointer, strParamPtr2: Pointer) => {
@@ -93,7 +95,7 @@ bindMethod("CallAction", (namePtr: Pointer, strParamPtr1: Pointer, strParamPtr2:
     }
     const strParam1 = strParamPtr1 ? ptrToStr(strParamPtr1) : UNUSED;
     const strParam2 = strParamPtr2 ? ptrToStr(strParamPtr2) : UNUSED;
-    if (isDebug) {
+    if (isDebug && !traceLogSuppressedNames.has(name)) {
         console.log(`call action: name=${name} strParam1=${strParam1} strParam2=${strParam2}`);
     }
     action(strParam1, strParam2);
@@ -107,7 +109,7 @@ bindMethod("CallFunction", (namePtr: Pointer, strParamPtr1: Pointer, strParamPtr
     }
     const strParam1 = strParamPtr1 ? ptrToStr(strParamPtr1) : UNUSED;
     const strParam2 = strParamPtr2 ? ptrToStr(strParamPtr2) : UNUSED;
-    if (isDebug) {
+    if (isDebug && !traceLogSuppressedNames.has(name)) {
         console.log(`call function: name=${name} strParam1=${strParam1} strParam2=${strParam2}`);
     }
     return strToPtr(func(strParam1, strParam2));
@@ -122,6 +124,13 @@ bindMethod("AddCallback", (namePtr: Pointer, callbackPtr: Pointer) => {
         callbackToUnity(callbackPtr, str1, str2);
     });
 });
+
+const suppressTraceLog = (name: string) => {
+    if (isDebug) {
+        console.log(`suppress trace log: name=${name}`);
+    }
+    traceLogSuppressedNames.add(name);
+}
 
 /**
  * Adds a function without a return value.
@@ -155,7 +164,7 @@ const callback = (name: string, strParam1?: string, strParam2?: string) => {
     if (!cb) {
         throw new Error(`A callback to call not found. name=${name}`);
     }
-    if (isDebug) {
+    if (isDebug && !traceLogSuppressedNames.has(name)) {
         console.log(`call callback: name=${name} strParam1=${strParam1} strParam2=${strParam2}`);
     }
     cb(strParam1 ?? UNUSED, strParam2 ?? UNUSED);
@@ -191,4 +200,4 @@ const isAsync = (func: object) => {
     return typeof func === "function" && Object.prototype.toString.call(func) === "[object AsyncFunction]";
 };
 
-export { addAction, addFunction, callback, isDebug, waitUntil, isAsync };
+export { addAction, addFunction, callback, isDebug, waitUntil, isAsync, suppressTraceLog };
