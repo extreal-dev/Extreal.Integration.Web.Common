@@ -33,6 +33,10 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
             sample.OnCallback
                 .Subscribe(testScreenView.ShowResult)
                 .AddTo(disposables);
+
+            testScreenView.OnSuppressDoActionTraceLogButtonClicked
+                .Subscribe(_ => sample.SuppressDoActionTraceLog())
+                .AddTo(disposables);
         }
 
         protected override void ReleaseManagedResources() => disposables.Dispose();

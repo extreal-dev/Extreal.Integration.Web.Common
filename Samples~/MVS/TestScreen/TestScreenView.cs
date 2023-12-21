@@ -14,6 +14,7 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         [SerializeField] private Button actionButton;
         [SerializeField] private Button functionButton;
         [SerializeField] private TMP_Text resultText;
+        [SerializeField] private Button suppressDoActionTraceLogButton;
 
         public class Parameters
         {
@@ -35,6 +36,10 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         [SuppressMessage("CodeCracker", "CC0033")]
         private readonly Subject<Parameters> onFunctionButtonClicked = new Subject<Parameters>();
 
+        public IObservable<Unit> OnSuppressDoActionTraceLogButtonClicked => onSuppressDoActionTraceLogButtonClicked;
+        [SuppressMessage("CodeCracker", "CC0033")]
+        private readonly Subject<Unit> onSuppressDoActionTraceLogButtonClicked = new Subject<Unit>();
+
         [SuppressMessage("CodeCracker", "CC0068")]
         private void Awake()
         {
@@ -47,6 +52,15 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
                 .OnClickAsObservable()
                 .TakeUntilDestroy(this)
                 .Subscribe(_ => onFunctionButtonClicked.OnNext(new Parameters(param1InputField.text, param2InputField.text)));
+
+            suppressDoActionTraceLogButton
+                .OnClickAsObservable()
+                .TakeUntilDestroy(this)
+                .Subscribe(_ =>
+                {
+                    suppressDoActionTraceLogButton.interactable = false;
+                    onSuppressDoActionTraceLogButtonClicked.OnNext(Unit.Default);
+                });
         }
 
         [SuppressMessage("CodeCracker", "CC0068")]
@@ -54,6 +68,7 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         {
             onActionButtonClicked.Dispose();
             onFunctionButtonClicked.Dispose();
+            onSuppressDoActionTraceLogButtonClicked.Dispose();
         }
 
         public void ShowResult(string result) => resultText.text = result;
