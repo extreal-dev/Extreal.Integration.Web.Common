@@ -27,8 +27,8 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         public string DoFunction(string param1, string param2)
             => WebGLHelper.CallFunction(nameof(DoFunction), param1, param2);
 
-        public void SuppressDoActionTraceLog()
-            => WebGLHelper.CallAction(nameof(SuppressDoActionTraceLog));
+        public void SuppressDoFunctionTraceLog()
+            => WebGLHelper.CallAction(nameof(SuppressDoFunctionTraceLog));
 
         protected override void ReleaseManagedResources() => onCallback.Dispose();
     }

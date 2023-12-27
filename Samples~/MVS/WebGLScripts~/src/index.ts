@@ -8,6 +8,6 @@ addFunction("DoFunction", (str1, str2) => {
     return `received param1=[${str1}] param2=[${str2}] in function`;
 });
 
-addAction("SuppressDoActionTraceLog", (unused1, unused2) => {
-    suppressTraceLog("DoAction");
+addAction("SuppressDoFunctionTraceLog", (unused1, unused2) => {
+    suppressTraceLog("DoFunction");
 })

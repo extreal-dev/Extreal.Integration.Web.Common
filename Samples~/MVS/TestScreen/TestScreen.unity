@@ -450,7 +450,7 @@ MonoBehaviour:
   actionButton: {fileID: 1519889867}
   functionButton: {fileID: 664819600}
   resultText: {fileID: 1568501311}
-  suppressDoActionTraceLogButton: {fileID: 956778936}
+  suppressDoFunctionTraceLogButton: {fileID: 956778936}
 --- !u!1 &799937339
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,8 +486,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -160, y: -530}
-  m_SizeDelta: {x: 1150, y: 120}
+  m_AnchoredPosition: {x: -200, y: -530}
+  m_SizeDelta: {x: 1200, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &799937341
 MonoBehaviour:
@@ -509,8 +509,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: When the Suppress Action trace log button is pressed, the console trace
-    log for call action is suppressed.
+  m_text: When the Suppress Function trace log button is pressed, the console trace
+    log for call function is suppressed.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -645,7 +645,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Suppress Action trace log
+  m_text: Suppress Function trace log
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -788,7 +788,7 @@ GameObject:
   - component: {fileID: 956778937}
   - component: {fileID: 956778936}
   m_Layer: 5
-  m_Name: SuppressActionTraceLogButton
+  m_Name: SuppressFunctionTraceLogButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -812,8 +812,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 500, y: -550}
-  m_SizeDelta: {x: 400, y: 60}
+  m_AnchoredPosition: {x: 450, y: -550}
+  m_SizeDelta: {x: 450, y: 60}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &956778936
 MonoBehaviour:
