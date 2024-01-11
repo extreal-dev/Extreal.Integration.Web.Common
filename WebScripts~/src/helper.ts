@@ -125,13 +125,6 @@ bindMethod("AddCallback", (namePtr: Pointer, callbackPtr: Pointer) => {
     });
 });
 
-const suppressTraceLog = (name: string) => {
-    if (isDebug) {
-        console.log(`suppress trace log: name=${name}`);
-    }
-    traceLogSuppressedNames.add(name);
-}
-
 /**
  * Adds a function without a return value.
  * 
@@ -199,5 +192,17 @@ const waitUntil = (condition: () => boolean, cancel: () => boolean, interval = 1
 const isAsync = (func: object) => {
     return typeof func === "function" && Object.prototype.toString.call(func) === "[object AsyncFunction]";
 };
+
+/**
+ * Suppresses trace log for the specified function or callback.
+ * 
+ * @param name - Target
+ */
+const suppressTraceLog = (name: string) => {
+    if (isDebug) {
+        console.log(`suppress trace log: name=${name}`);
+    }
+    traceLogSuppressedNames.add(name);
+}
 
 export { addAction, addFunction, callback, isDebug, waitUntil, isAsync, suppressTraceLog };
