@@ -1,11 +1,15 @@
 {
-    "name": "Extreal.Integration.Web.Common",
-    "rootNamespace": "Extreal.Integration.Web.Common",
+    "name": "Extreal.Integration.Web.Common.MVS2",
+    "rootNamespace": "Extreal.Integration.Web.Common.MVS2",
     "references": [
+        "Unity.TextMeshPro",
+        "UniTask",
+        "UniRx",
+        "VContainer",
         "Extreal.Core.Logging",
         "Extreal.Core.Common",
-        "UniTask",
-        "UniRx"
+        "Extreal.Core.StageNavigation",
+        "Extreal.Integration.Web.Common"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

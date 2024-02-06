@@ -1,9 +1,9 @@
 const plugin = {};
 
-const helperNames = ["lengthBytesUTF8", "stringToUTF8", "UTF8ToString", "Module"];
+const helperNames = ["lengthBytesUTF8", "stringToUTF8", "UTF8ToString", "Module", "GL"];
 const helper = "{" + helperNames.map(func => `${func}:${func}`).join(",") + "}";
 plugin["Nop"] = function () {};
-plugin["Nop__postset"] = `_Nop = __getNop(${helper})`;
+plugin["Nop__postset"] = `_Nop = __getNop(${helper}, () => GLctx)`;
 
 const methods = ["CallAction", "CallFunction", "AddCallback"];
 for (let i = 0; i < methods.length; i++) {

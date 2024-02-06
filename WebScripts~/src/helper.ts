@@ -15,11 +15,40 @@ type HelperConfig = {
     isDebug: boolean;
 };
 
+type Texture = {
+    name: number;
+}
+
+type GL = {
+    textures: Texture[];
+};
+
+  type GLctx = {
+    TEXTURE_2D: number;
+    UNPACK_FLIP_Y_WEBGL: number;
+    TEXTURE_WRAP_S: number;
+    TEXTURE_WRAP_T: number;
+    TEXTURE_MIN_FILTER: number;
+    CLAMP_TO_EDGE: number;
+    LINEAR: number;
+    RGBA: number;
+    UNSIGNED_BYTE: number;
+    deleteTexture: (tex: Texture) => void;
+    createTexture: () => Texture;
+    bindTexture: (texType: number, tex: Texture) => void;
+    pixelStorei: (flipDir: number, isFlipped: boolean) => void;
+    texParameteri: (texType: number, method: number, op: number) => void;
+    texImage2D: (texType: number, num: number, colorFormat1: number, colorFormat2: number, type: number, element: HTMLMediaElement) => void;
+}
+
+
 type Helper = {
     Module: Module;
     lengthBytesUTF8: (str: string) => number;
     stringToUTF8: (str: string, buf: Pointer, size: number) => void;
     UTF8ToString: (ptr: Pointer) => string;
+    GL: GL;
+    GLctx: GLctx;
 };
 
 /**
@@ -32,14 +61,15 @@ const boundMethods = new Map<string, BindMethod>();
 
 declare global {
     // rome-ignore lint/style/noVar: To call from Unity's jslib
-    var __getNop: (helperObj: Helper) => void;
+    var __getNop: (helperObj: Helper, getGLctx: () => GLctx) => void;
     // rome-ignore lint/style/noVar: To call from Unity's jslib
     var __getMethod: (name: string) => BindMethod;
 }
 
-globalThis["__getNop"] = (helperObj) => {
-    helper = helperObj;
+globalThis["__getNop"] = (helperObj, getGLctx) => {
     return (jsonConfigPtr: Pointer) => {
+        helperObj.GLctx = getGLctx();
+        helper = helperObj;
         isDebug = (JSON.parse(ptrToStr(jsonConfigPtr)) as HelperConfig).isDebug;
         console.log(`helper: isDebug=${isDebug}`);
     };
@@ -162,6 +192,31 @@ const callback = (name: string, strParam1?: string, strParam2?: string) => {
 };
 
 /**
+ * Updates texture.
+ *
+ * @param element - HTMLMediaElement
+ * @param textureId - Native texture ID of Unity
+ */
+const updateTexture = (element: HTMLMediaElement, textureId: number) => {
+  const prevTexture = helper.GL.textures[textureId];
+  helper.GLctx.deleteTexture(prevTexture);
+
+  const texture = helper.GLctx.createTexture();
+  texture.name = textureId;
+  helper.GL.textures[textureId] = texture;
+
+  helper.GLctx.bindTexture(helper.GLctx.TEXTURE_2D, helper.GL.textures[textureId]);
+  helper.GLctx.pixelStorei(helper.GLctx.UNPACK_FLIP_Y_WEBGL, true);
+  helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_WRAP_S, helper.GLctx.CLAMP_TO_EDGE);
+  helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_WRAP_T, helper.GLctx.CLAMP_TO_EDGE);
+  helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_MIN_FILTER, helper.GLctx.LINEAR);
+  if (element.readyState >= element.HAVE_ENOUGH_DATA) {
+    helper.GLctx.texImage2D(helper.GLctx.TEXTURE_2D, 0, helper.GLctx.RGBA, helper.GLctx.RGBA, helper.GLctx.UNSIGNED_BYTE, element);
+  }
+  helper.GLctx.pixelStorei(helper.GLctx.UNPACK_FLIP_Y_WEBGL, false);
+};
+
+/**
  * Waits until the condition is satisfied.
  * 
  * @param condition - Condition
@@ -191,4 +246,4 @@ const isAsync = (func: object) => {
     return typeof func === "function" && Object.prototype.toString.call(func) === "[object AsyncFunction]";
 };
 
-export { addAction, addFunction, callback, isDebug, waitUntil, isAsync };
+export { addAction, addFunction, callback, updateTexture, isDebug, waitUntil, isAsync };
