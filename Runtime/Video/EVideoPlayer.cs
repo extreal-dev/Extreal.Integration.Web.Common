@@ -119,9 +119,12 @@ namespace Extreal.Integration.Web.Common.Video
         /// <summary>
         /// Sets the audio volume.
         /// </summary>
-        /// <param name="volume">Audio volume.</param>
+        /// <param name="volume">Audio volume (0.0 - 1.0).</param>
         /// <param name="trackIndex">Track index.</param>
         public void SetAudioVolume(float volume, ushort trackIndex = default)
-            => eVideoPlayer.SetAudioVolume(trackIndex, volume);
+        {
+            var clampedVolume = Mathf.Clamp(volume, 0f, 1f);
+            eVideoPlayer.SetAudioVolume(trackIndex, clampedVolume);
+        }
     }
 }

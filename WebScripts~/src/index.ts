@@ -1,3 +1,3 @@
 export * from "./helper";
-export * from "./VideoPlayer/VideoPlayer";
-export * from "./VideoPlayer/VideoPlayerAdopter";
+export * from "./Video/VideoPlayer";
+export * from "./Video/VideoPlayerAdopter";
