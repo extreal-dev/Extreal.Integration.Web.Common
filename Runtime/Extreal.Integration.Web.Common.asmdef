@@ -2,6 +2,7 @@
     "name": "Extreal.Integration.Web.Common",
     "rootNamespace": "Extreal.Integration.Web.Common",
     "references": [
+        "Extreal.Framework.Analyzer",
         "Extreal.Core.Logging",
         "Extreal.Core.Common",
         "UniTask",
