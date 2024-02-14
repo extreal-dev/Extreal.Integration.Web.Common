@@ -131,8 +131,11 @@ bindMethod("AddCallback", (namePtr: Pointer, callbackPtr: Pointer) => {
  * @param name - Target
  * @param action - Function
  */
-const addAction = (name: string, action: Action) => {
+const addAction = (name: string, action: Action, isSuppressTraceLog: boolean = false) => {
     actions.set(name, action);
+    if (isSuppressTraceLog) {
+        suppressTraceLog(name);
+    }
 };
 
 /**
@@ -141,8 +144,11 @@ const addAction = (name: string, action: Action) => {
  * @param name - Target
  * @param func - Function
  */
-const addFunction = (name: string, func: Function) => {
+const addFunction = (name: string, func: Function, isSuppressTraceLog: boolean = false) => {
     functions.set(name, func);
+    if (isSuppressTraceLog) {
+        suppressTraceLog(name);
+    }
 };
 
 /**
@@ -152,12 +158,12 @@ const addFunction = (name: string, func: Function) => {
  * @param strParam1 - First string parameter
  * @param strParam2 - Second string parameter
  */
-const callback = (name: string, strParam1?: string, strParam2?: string) => {
+const callback = (name: string, strParam1?: string, strParam2?: string, isSuppressTraceLog: boolean = false) => {
     const cb = callbacks.get(name);
     if (!cb) {
         throw new Error(`A callback to call not found. name=${name}`);
     }
-    if (isDebug && !traceLogSuppressedNames.has(name)) {
+    if (isDebug && !isSuppressTraceLog) {
         console.log(`call callback: name=${name} strParam1=${strParam1} strParam2=${strParam2}`);
     }
     cb(strParam1 ?? UNUSED, strParam2 ?? UNUSED);
@@ -193,16 +199,8 @@ const isAsync = (func: object) => {
     return typeof func === "function" && Object.prototype.toString.call(func) === "[object AsyncFunction]";
 };
 
-/**
- * Suppresses trace log for the specified function or callback.
- * 
- * @param name - Target
- */
 const suppressTraceLog = (name: string) => {
-    if (isDebug) {
-        console.log(`suppress trace log: name=${name}`);
-    }
     traceLogSuppressedNames.add(name);
 }
 
-export { addAction, addFunction, callback, isDebug, waitUntil, isAsync, suppressTraceLog };
+export { addAction, addFunction, callback, isDebug, waitUntil, isAsync };
