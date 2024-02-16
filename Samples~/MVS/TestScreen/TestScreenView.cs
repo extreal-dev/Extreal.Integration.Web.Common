@@ -13,6 +13,7 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         [SerializeField] private TMP_InputField param2InputField;
         [SerializeField] private Button actionButton;
         [SerializeField] private Button functionButton;
+        [SerializeField] private Button traceLogSuppressedActionButton;
         [SerializeField] private Button traceLogSuppressedFunctionButton;
         [SerializeField] private TMP_Text resultText;
 
@@ -36,6 +37,10 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         [SuppressMessage("CodeCracker", "CC0033")]
         private readonly Subject<Parameters> onFunctionButtonClicked = new Subject<Parameters>();
 
+        public IObservable<Parameters> OnTraceLogSuppressedActionButtonClicked => onTraceLogSuppressedActionButtonClicked;
+        [SuppressMessage("CodeCracker", "CC0033")]
+        private readonly Subject<Parameters> onTraceLogSuppressedActionButtonClicked = new Subject<Parameters>();
+
         public IObservable<Parameters> OnTraceLogSuppressedFunctionButtonClicked => onTraceLogSuppressedFunctionButtonClicked;
         [SuppressMessage("CodeCracker", "CC0033")]
         private readonly Subject<Parameters> onTraceLogSuppressedFunctionButtonClicked = new Subject<Parameters>();
@@ -52,6 +57,11 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
                 .OnClickAsObservable()
                 .TakeUntilDestroy(this)
                 .Subscribe(_ => onFunctionButtonClicked.OnNext(new Parameters(param1InputField.text, param2InputField.text)));
+
+            traceLogSuppressedActionButton
+                .OnClickAsObservable()
+                .TakeUntilDestroy(this)
+                .Subscribe(_ => onTraceLogSuppressedActionButtonClicked.OnNext(new Parameters(param1InputField.text, param2InputField.text)));
 
             traceLogSuppressedFunctionButton
                 .OnClickAsObservable()
