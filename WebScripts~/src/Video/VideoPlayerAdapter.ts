@@ -1,7 +1,7 @@
 import { addAction, addFunction, callback } from "../helper";
 import { VideoPlayer } from "./VideoPlayer";
 
-class VideoPlayerAdopter {
+class VideoPlayerAdapter {
   private videoPlayers = new Map<string, VideoPlayer>();
 
   public adopt = () => {
@@ -34,4 +34,4 @@ class VideoPlayerAdopter {
   };
 }
 
-export { VideoPlayerAdopter }
+export { VideoPlayerAdapter }
