@@ -97,12 +97,6 @@ namespace Extreal.Integration.Web.Common.Video
         public override void SetAudioVolume(float volume, ushort trackIndex = default)
             => WebGLHelper.CallAction(WithPrefix(nameof(SetAudioVolume)), volume.ToString(), instanceId);
 
-        public override void Clear()
-        {
-            Stop();
-            WebGLHelper.CallAction(WithPrefix(nameof(Clear)), instanceId);
-        }
-
         private static string WithPrefix(string name)
             => $"{nameof(WebGLEVideoPlayer)}#{name}";
     }

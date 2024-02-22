@@ -21,7 +21,6 @@ class VideoPlayerAdapter {
     addFunction(this.withPrefix("GetLength"), (instanceId) =>this.getVideoPlayer(instanceId).getLength());
     addAction(this.withPrefix("SetTime"), (time, instanceId) =>this.getVideoPlayer(instanceId).setTime(Number.parseFloat(time)));
     addAction(this.withPrefix("SetAudioVolume"), (volume, instanceId) =>this.getVideoPlayer(instanceId).setAudioVolume(Number.parseFloat(volume)));
-    addAction(this.withPrefix("Clear"), (instanceId) => this.getVideoPlayer(instanceId).clear());
   }
 
   private withPrefix = (name: string) => `WebGLEVideoPlayer#${name}`;

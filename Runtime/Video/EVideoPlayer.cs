@@ -108,11 +108,6 @@ namespace Extreal.Integration.Web.Common.Video
         /// <param name="trackIndex">Track index.</param>
         public abstract void SetAudioVolume(float volume, ushort trackIndex = default);
 
-        /// <summary>
-        /// Cleans up the VideoPlayer.
-        /// </summary>
-        public abstract void Clear();
-
         /// <inheritdoc/>
         protected sealed override void ReleaseManagedResources()
         {

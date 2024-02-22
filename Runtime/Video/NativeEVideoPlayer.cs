@@ -52,8 +52,5 @@ namespace Extreal.Integration.Web.Common.Video
 
         public override void SetAudioVolume(float volume, ushort trackIndex = default)
             => videoPlayer.SetDirectAudioVolume(trackIndex, volume);
-
-        public override void Clear()
-            => Stop();
     }
 }

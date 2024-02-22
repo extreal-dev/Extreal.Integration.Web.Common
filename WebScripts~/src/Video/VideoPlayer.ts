@@ -35,7 +35,12 @@ class VideoPlayer {
     document.getElementById("unity-container")?.appendChild(this.element);
   };
 
-  public releaseManagedResources = () => this.clear();
+  public releaseManagedResources = () => {
+    if(this.element) {
+      document.getElementById("unity-container")?.removeChild(this.element);
+      this.element = null;
+    }
+  };
 
   public prepare = (filePath: string) => {
     var elem = this.getVideoElement();
@@ -100,13 +105,6 @@ class VideoPlayer {
     const elem = this.getVideoElement();
     elem.volume = volume;
   };
-
-  public clear = () => {
-    if(this.element) {
-      document.getElementById("unity-container")?.removeChild(this.element);
-      this.element = null;
-    }
-  }
 
   private getVideoElementId = (gameObjectId: string) => "video_screen_" + gameObjectId;
 
