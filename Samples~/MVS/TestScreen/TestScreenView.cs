@@ -13,6 +13,8 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         [SerializeField] private TMP_InputField param2InputField;
         [SerializeField] private Button actionButton;
         [SerializeField] private Button functionButton;
+        [SerializeField] private Button traceLogSuppressedActionButton;
+        [SerializeField] private Button traceLogSuppressedFunctionButton;
         [SerializeField] private TMP_Text resultText;
 
         public class Parameters
@@ -35,6 +37,14 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         [SuppressMessage("CodeCracker", "CC0033")]
         private readonly Subject<Parameters> onFunctionButtonClicked = new Subject<Parameters>();
 
+        public IObservable<Parameters> OnTraceLogSuppressedActionButtonClicked => onTraceLogSuppressedActionButtonClicked;
+        [SuppressMessage("CodeCracker", "CC0033")]
+        private readonly Subject<Parameters> onTraceLogSuppressedActionButtonClicked = new Subject<Parameters>();
+
+        public IObservable<Parameters> OnTraceLogSuppressedFunctionButtonClicked => onTraceLogSuppressedFunctionButtonClicked;
+        [SuppressMessage("CodeCracker", "CC0033")]
+        private readonly Subject<Parameters> onTraceLogSuppressedFunctionButtonClicked = new Subject<Parameters>();
+
         [SuppressMessage("CodeCracker", "CC0068")]
         private void Awake()
         {
@@ -47,6 +57,16 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
                 .OnClickAsObservable()
                 .TakeUntilDestroy(this)
                 .Subscribe(_ => onFunctionButtonClicked.OnNext(new Parameters(param1InputField.text, param2InputField.text)));
+
+            traceLogSuppressedActionButton
+                .OnClickAsObservable()
+                .TakeUntilDestroy(this)
+                .Subscribe(_ => onTraceLogSuppressedActionButtonClicked.OnNext(new Parameters(param1InputField.text, param2InputField.text)));
+
+            traceLogSuppressedFunctionButton
+                .OnClickAsObservable()
+                .TakeUntilDestroy(this)
+                .Subscribe(_ => onTraceLogSuppressedFunctionButtonClicked.OnNext(new Parameters(param1InputField.text, param2InputField.text)));
         }
 
         [SuppressMessage("CodeCracker", "CC0068")]
@@ -54,6 +74,7 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
         {
             onActionButtonClicked.Dispose();
             onFunctionButtonClicked.Dispose();
+            onTraceLogSuppressedFunctionButtonClicked.Dispose();
         }
 
         public void ShowResult(string result) => resultText.text = result;

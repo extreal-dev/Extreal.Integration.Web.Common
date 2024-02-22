@@ -113,6 +113,8 @@ const actions = new Map<string, Action>();
 const functions = new Map<string, Function>();
 const callbacks = new Map<string, Callback>();
 
+const traceLogSuppressedNames = new Set<string>();
+
 const UNUSED = "";
 
 bindMethod("CallAction", (namePtr: Pointer, strParamPtr1: Pointer, strParamPtr2: Pointer) => {
@@ -123,7 +125,7 @@ bindMethod("CallAction", (namePtr: Pointer, strParamPtr1: Pointer, strParamPtr2:
     }
     const strParam1 = strParamPtr1 ? ptrToStr(strParamPtr1) : UNUSED;
     const strParam2 = strParamPtr2 ? ptrToStr(strParamPtr2) : UNUSED;
-    if (isDebug) {
+    if (isDebug && !traceLogSuppressedNames.has(name)) {
         console.log(`call action: name=${name} strParam1=${strParam1} strParam2=${strParam2}`);
     }
     action(strParam1, strParam2);
@@ -137,7 +139,7 @@ bindMethod("CallFunction", (namePtr: Pointer, strParamPtr1: Pointer, strParamPtr
     }
     const strParam1 = strParamPtr1 ? ptrToStr(strParamPtr1) : UNUSED;
     const strParam2 = strParamPtr2 ? ptrToStr(strParamPtr2) : UNUSED;
-    if (isDebug) {
+    if (isDebug && !traceLogSuppressedNames.has(name)) {
         console.log(`call function: name=${name} strParam1=${strParam1} strParam2=${strParam2}`);
     }
     return strToPtr(func(strParam1, strParam2));
@@ -159,8 +161,11 @@ bindMethod("AddCallback", (namePtr: Pointer, callbackPtr: Pointer) => {
  * @param name - Target
  * @param action - Function
  */
-const addAction = (name: string, action: Action) => {
+const addAction = (name: string, action: Action, isSuppressTraceLog: boolean = false) => {
     actions.set(name, action);
+    if (isSuppressTraceLog) {
+        suppressTraceLog(name);
+    }
 };
 
 /**
@@ -169,8 +174,11 @@ const addAction = (name: string, action: Action) => {
  * @param name - Target
  * @param func - Function
  */
-const addFunction = (name: string, func: Function) => {
+const addFunction = (name: string, func: Function, isSuppressTraceLog: boolean = false) => {
     functions.set(name, func);
+    if (isSuppressTraceLog) {
+        suppressTraceLog(name);
+    }
 };
 
 /**
@@ -180,12 +188,12 @@ const addFunction = (name: string, func: Function) => {
  * @param strParam1 - First string parameter
  * @param strParam2 - Second string parameter
  */
-const callback = (name: string, strParam1?: string, strParam2?: string) => {
+const callback = (name: string, strParam1?: string, strParam2?: string, isSuppressTraceLog: boolean = false) => {
     const cb = callbacks.get(name);
     if (!cb) {
         throw new Error(`A callback to call not found. name=${name}`);
     }
-    if (isDebug) {
+    if (isDebug && !isSuppressTraceLog) {
         console.log(`call callback: name=${name} strParam1=${strParam1} strParam2=${strParam2}`);
     }
     cb(strParam1 ?? UNUSED, strParam2 ?? UNUSED);
@@ -245,5 +253,9 @@ const waitUntil = (condition: () => boolean, cancel: () => boolean, interval = 1
 const isAsync = (func: object) => {
     return typeof func === "function" && Object.prototype.toString.call(func) === "[object AsyncFunction]";
 };
+
+const suppressTraceLog = (name: string) => {
+    traceLogSuppressedNames.add(name);
+}
 
 export { addAction, addFunction, callback, updateTexture, isDebug, waitUntil, isAsync };

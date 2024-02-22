@@ -30,6 +30,18 @@ namespace Extreal.Integration.Web.Common.MVS.TestScreen
                 })
                 .AddTo(disposables);
 
+            testScreenView.OnTraceLogSuppressedActionButtonClicked
+                .Subscribe(parameters => sample.DoTraceLogSuppressedAction(parameters.Param1, parameters.Param2))
+                .AddTo(disposables);
+
+            testScreenView.OnTraceLogSuppressedFunctionButtonClicked
+                .Subscribe(parameters =>
+                {
+                    var result = sample.DoTraceLogSuppressedFunction(parameters.Param1, parameters.Param2);
+                    testScreenView.ShowResult(result);
+                })
+                .AddTo(disposables);
+
             sample.OnCallback
                 .Subscribe(testScreenView.ShowResult)
                 .AddTo(disposables);
