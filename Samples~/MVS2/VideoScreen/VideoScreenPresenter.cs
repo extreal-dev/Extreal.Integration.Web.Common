@@ -86,12 +86,14 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
 
             videoScreenView.Initialize();
 
-            videoPlayer.Initialize();
             videoPlayer.SetUrl(appState.VideoUrl);
             videoPlayer.Prepare();
         }
 
         protected override void ReleaseManagedResources()
-            => disposables.Dispose();
+        {
+            videoPlayer.Clear();
+            disposables.Dispose();
+        }
     }
 }
