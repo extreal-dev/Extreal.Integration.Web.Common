@@ -92,6 +92,9 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
         }
 
         protected override void ReleaseManagedResources()
-            => disposables.Dispose();
+        {
+            videoPlayer.Clear();
+            disposables.Dispose();
+        }
     }
 }

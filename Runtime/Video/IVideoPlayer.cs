@@ -8,6 +8,7 @@ namespace Extreal.Integration.Web.Common.Video
         IObservable<Unit> OnPrepareCompleted { get; }
         IObservable<string> OnErrorReceived { get; }
         double Length { get; }
+        void Clear();
         void SetUrl(string url);
         void SetTime(double time);
         void Prepare();

@@ -69,6 +69,9 @@ namespace Extreal.Integration.Web.Common.Video
                 .AddTo(this);
         }
 
+        public void Clear()
+            => eVideoPlayer.Clear();
+
         /// <summary>
         /// Sets the video url.
         /// </summary>

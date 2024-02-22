@@ -88,6 +88,12 @@ namespace Extreal.Integration.Web.Common.Video
             }
         }
 
+        public void Clear()
+        {
+            Stop();
+            WebGLHelper.CallAction(WithPrefix(nameof(Clear)), instanceId);
+        }
+
         public void SetUrl(string url)
             => this.url = url;
 

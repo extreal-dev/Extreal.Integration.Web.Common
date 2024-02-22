@@ -49,6 +49,9 @@ namespace Extreal.Integration.Web.Common.Video
             disposables.Dispose();
         }
 
+        public void Clear()
+            => Stop();
+
         public void SetUrl(string url)
             => this.url = url;
 
