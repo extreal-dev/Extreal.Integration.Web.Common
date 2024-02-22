@@ -1,130 +1,128 @@
-using UnityEngine;
-using UnityEngine.Video;
 using System;
+using System.Diagnostics.CodeAnalysis;
+using Extreal.Core.Common.System;
 using Extreal.Core.Logging;
 using UniRx;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Extreal.Integration.Web.Common.Video
 {
     /// <summary>
-    /// Class that handles VideoPlayer depending on the platform.
+    /// Class that handles VideoPlayer.
     /// </summary>
-    public class EVideoPlayer : MonoBehaviour
+    public abstract class EVideoPlayer : DisposableBase
     {
-        [Header("Use on platforms other than WebGL")]
-        [SerializeField] private VideoPlayer videoPlayer;
-
-        [Header("Use only on WebGL platform")]
-        [SerializeField] private RenderTexture targetRenderTexture;
+        private static readonly ELogger Logger = LoggingManager.GetLogger(nameof(EVideoPlayer));
 
         /// <summary>
         /// Invokes immediately after the preparation is completed.
         /// </summary>
-        public IObservable<Unit> OnPrepareCompleted => onPrepareCompleted.TakeUntilDestroy(this);
+        public IObservable<Unit> OnPrepareCompleted => onPrepareCompleted.AddTo(Disposables);
         [SuppressMessage("Usage", "CC0033")]
         private readonly Subject<Unit> onPrepareCompleted = new Subject<Unit>();
+
+        /// <summary>
+        /// Fires the OnPrepareCompleted.
+        /// </summary>
+        protected void FireOnPrepareCompleted()
+        {
+            if (Logger.IsDebug())
+            {
+                Logger.LogDebug(nameof(FireOnPrepareCompleted));
+            }
+            onPrepareCompleted.OnNext(Unit.Default);
+        }
 
         /// <summary>
         /// <para>Invokes immediately after an error has occurred.</para>
         /// Arg: Error message
         /// </summary>
-        public IObservable<string> OnErrorReceived => onErrorReceived.TakeUntilDestroy(this);
+        public IObservable<string> OnErrorReceived => onErrorReceived.AddTo(Disposables);
         [SuppressMessage("Usage", "CC0033")]
         private readonly Subject<string> onErrorReceived = new Subject<string>();
 
         /// <summary>
-        /// Video length.
+        /// Fires the OnErrorReceived.
         /// </summary>
-        public double Length
-            => eVideoPlayer.Length;
-
-        private string url;
-        private IVideoPlayer eVideoPlayer;
-
-        private static readonly ELogger Logger = LoggingManager.GetLogger(nameof(EVideoPlayer));
+        /// <param name="message"></param>
+        protected void FireOnErrorReceived(string message)
+        {
+            if (Logger.IsDebug())
+            {
+                Logger.LogDebug($"{nameof(FireOnErrorReceived)}: message={message}");
+            }
+            onErrorReceived.OnNext(message);
+        }
 
         /// <summary>
-        /// Initializes the VideoPlayer.
+        /// Disposables.
         /// </summary>
-        public void Initialize()
-        {
-            onErrorReceived.AddTo(this);
-            onPrepareCompleted.AddTo(this);
+        protected CompositeDisposable Disposables { get; } = new CompositeDisposable();
 
-            eVideoPlayer
-#if UNITY_WEBGL && !UNITY_EDITOR
-                = new WebGLVideoPlayer(targetRenderTexture)
-#else
-                = new NativeVideoPlayer(videoPlayer)
-#endif
-                .AddTo(this);
+        /// <summary>
+        /// Video url.
+        /// </summary>
+        /// <value>Video url.</value>
+        protected string Url { get; private set; }
 
-            eVideoPlayer.OnPrepareCompleted
-                .Subscribe(onPrepareCompleted.OnNext)
-                .AddTo(this);
-
-            eVideoPlayer.OnErrorReceived
-                .Subscribe(onErrorReceived.OnNext)
-                .AddTo(this);
-        }
+        /// <summary>
+        /// Video length.
+        /// </summary>
+        public abstract double Length { get; }
 
         /// <summary>
         /// Sets the video url.
         /// </summary>
         /// <param name="url">Video url.</param>
-        public void SetUrl(string url)
-        {
-            this.url = url;
-            eVideoPlayer.SetUrl(this.url);
-        }
+        public void SetUrl(string url) => Url = url;
 
         /// <summary>
         /// Sets the playback position.
         /// </summary>
         /// <param name="time">Playback position.</param>
-        public void SetTime(double time)
-            => eVideoPlayer.SetTime(time);
+        public abstract void SetTime(double time);
 
         /// <summary>
         /// Prepares the VideoPlayer.
         /// </summary>
-        public void Prepare()
-        {
-            if (Logger.IsDebug())
-            {
-                Logger.LogDebug("Prepare: " + url);
-            }
-            eVideoPlayer.Prepare();
-        }
+        public abstract void Prepare();
 
         /// <summary>
         /// Plays the video.
         /// </summary>
-        public void Play()
-            => eVideoPlayer.Play();
+        public abstract void Play();
 
         /// <summary>
         /// Pauses the video.
         /// </summary>
-        public void Pause()
-            => eVideoPlayer.Pause();
+        public abstract void Pause();
 
         /// <summary>
         /// Stops the video.
         /// </summary>
-        public void Stop()
-            => eVideoPlayer.Stop();
+        public abstract void Stop();
 
         /// <summary>
         /// Sets the audio volume.
         /// </summary>
         /// <param name="volume">Audio volume (0.0 - 1.0).</param>
         /// <param name="trackIndex">Track index.</param>
-        public void SetAudioVolume(float volume, ushort trackIndex = default)
+        public abstract void SetAudioVolume(float volume, ushort trackIndex = default);
+
+        /// <summary>
+        /// Cleans up the VideoPlayer.
+        /// </summary>
+        public abstract void Clear();
+
+        /// <inheritdoc/>
+        protected sealed override void ReleaseManagedResources()
         {
-            var clampedVolume = Mathf.Clamp(volume, 0f, 1f);
-            eVideoPlayer.SetAudioVolume(trackIndex, clampedVolume);
+            DoReleaseManagedResources();
+            Disposables.Dispose();
         }
+
+        /// <summary>
+        /// Releases managed resources.
+        /// </summary>
+        protected abstract void DoReleaseManagedResources();
     }
 }
