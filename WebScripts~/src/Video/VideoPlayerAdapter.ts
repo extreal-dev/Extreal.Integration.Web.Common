@@ -17,7 +17,7 @@ class VideoPlayerAdapter {
     addAction(this.withPrefix("Play"), (instanceId) => this.getVideoPlayer(instanceId).play());
     addAction(this.withPrefix("Pause"), (instanceId) =>this.getVideoPlayer(instanceId).pause());
     addAction(this.withPrefix("Stop"), (instanceId) =>this.getVideoPlayer(instanceId).stop());
-    addAction(this.withPrefix("UpdateTexture"), (textureId, instanceId) => this.getVideoPlayer(instanceId).updateTexture(Number.parseInt(textureId)));
+    addAction(this.withPrefix("UpdateTexture"), (textureId, instanceId) => this.getVideoPlayer(instanceId).updateTexture(Number.parseInt(textureId)), true);
     addFunction(this.withPrefix("GetLength"), (instanceId) =>this.getVideoPlayer(instanceId).getLength());
     addAction(this.withPrefix("SetTime"), (time, instanceId) =>this.getVideoPlayer(instanceId).setTime(Number.parseFloat(time)));
     addAction(this.withPrefix("SetAudioVolume"), (volume, instanceId) =>this.getVideoPlayer(instanceId).setAudioVolume(Number.parseFloat(volume)));
