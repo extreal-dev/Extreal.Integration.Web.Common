@@ -335,6 +335,9 @@ const updateTexture = (element: HTMLVideoElement, textureId: number) => {
     
     if (element.readyState >= element.HAVE_ENOUGH_DATA) {
         if (s2lTexture === null || prevVideoHeight !== element.videoHeight || prevVideoWidth !== element.videoWidth) {
+            if (s2lTexture !== null) {
+                helper.GLctx.deleteTexture(s2lTexture);
+            }
             s2lTexture = createTexture();
             prevVideoHeight = element.videoHeight;
             prevVideoWidth = element.videoWidth;
