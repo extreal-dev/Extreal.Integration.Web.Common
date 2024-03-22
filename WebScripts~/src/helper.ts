@@ -343,20 +343,21 @@ const updateTexture = (element: HTMLVideoElement, textureId: number) => {
         }
         helper.GLctx.texImage2D(helper.GLctx.TEXTURE_2D, 0, helper.GLctx.RGBA, helper.GLctx.RGBA, helper.GLctx.UNSIGNED_BYTE, element);
 
-        if (s2lProgram == null) {
+        if (s2lProgram === null) {
             createS2lProgram();
         }
-        if (s2lVBO == null) {
+        if (s2lVBO === null) {
             createS2lVBO();
         }
         if (s2lFBO === null) {
             s2lFBO = helper.GLctx.createFramebuffer();
         }
-        helper.GLctx.bindFramebuffer(helper.GLctx.FRAMEBUFFER, s2lFBO);
-        helper.GLctx.framebufferTexture2D(helper.GLctx.FRAMEBUFFER, helper.GLctx.COLOR_ATTACHMENT0, helper.GLctx.TEXTURE_2D, texture, 0);
 
-        helper.GLctx.viewport(0, 0, element.videoWidth, element.videoHeight);
         if (s2lProgram !== null && s2lVertexPositionNDC !== null && s2lVBO !== null) {
+            helper.GLctx.bindFramebuffer(helper.GLctx.FRAMEBUFFER, s2lFBO);
+            helper.GLctx.framebufferTexture2D(helper.GLctx.FRAMEBUFFER, helper.GLctx.COLOR_ATTACHMENT0, helper.GLctx.TEXTURE_2D, texture, 0);
+
+            helper.GLctx.viewport(0, 0, element.videoWidth, element.videoHeight);
             helper.GLctx.useProgram(s2lProgram);
             helper.GLctx.bindBuffer(helper.GLctx.ARRAY_BUFFER, s2lVBO);
             helper.GLctx.enableVertexAttribArray(s2lVertexPositionNDC);
