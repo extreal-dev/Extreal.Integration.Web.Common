@@ -7,7 +7,7 @@ type VideoPlayerCallbacks = {
 
 class VideoPlayer {
   private callbacks: VideoPlayerCallbacks;
-  private element: HTMLMediaElement | null = null;
+  private element: HTMLVideoElement | null = null;
 
   constructor(gameObjectId: string, callbacks: VideoPlayerCallbacks) {
     this.callbacks = callbacks;
