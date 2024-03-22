@@ -23,7 +23,26 @@ type GL = {
     textures: Texture[];
 };
 
-  type GLctx = {
+type WebGLShader = {
+}
+
+type WebGLBuffer = {
+}
+
+type WebGLFramebuffer = {
+}
+
+type Canvas = {
+    width: number,
+    height: number,
+}
+
+type texImage2DType = {
+    (texType: number, num: number, colorFormat1: number, colorFormat2: number, type: number, element: HTMLMediaElement): void;
+    (texType: number, num: number, colorFormat1: number, width: number, height: number, border: number, colorFormat2: number, type: number, element: null): void;
+}
+
+type GLctx = {
     TEXTURE_2D: number;
     UNPACK_FLIP_Y_WEBGL: number;
     TEXTURE_WRAP_S: number;
@@ -33,12 +52,39 @@ type GL = {
     LINEAR: number;
     RGBA: number;
     UNSIGNED_BYTE: number;
+    VERTEX_SHADER: number;
+    FRAGMENT_SHADER: number;
+    TRIANGLES: number;
+    FLOAT: number;
+    ARRAY_BUFFER: number;
+    STATIC_DRAW: number;
+    FRAMEBUFFER: number;
+    COLOR_ATTACHMENT0: number;
     deleteTexture: (tex: Texture) => void;
     createTexture: () => Texture;
     bindTexture: (texType: number, tex: Texture) => void;
     pixelStorei: (flipDir: number, isFlipped: boolean) => void;
     texParameteri: (texType: number, method: number, op: number) => void;
-    texImage2D: (texType: number, num: number, colorFormat1: number, colorFormat2: number, type: number, element: HTMLMediaElement) => void;
+    texImage2D: texImage2DType;
+    useProgram: (program: WebGLProgram) => void;
+    bindFramebuffer: (target: number, framebuffer: WebGLFramebuffer | null) => void;
+    createShader: (type: number) => WebGLShader;
+    shaderSource: (shader: WebGLShader, source: string) => void;
+    compileShader: (shader: WebGLShader) => void;
+    createProgram: () => WebGLProgram;
+    attachShader: (program: WebGLProgram, shader: WebGLShader) => void;
+    linkProgram: (program: WebGLProgram) => void;
+    drawArrays: (mode: number, first: number, count: number) => void;
+    viewport: (x: number, y: number, width: number, height: number) => void;
+    enableVertexAttribArray: (index: number) => void;
+    vertexAttribPointer: (index: number, size: number, type: number, normalized: boolean, stride: number, offset: number) => void;
+    getAttribLocation: (program: WebGLProgram, name: string) => number;
+    createBuffer: () => WebGLBuffer;
+    bindBuffer: (target: number, buffer: WebGLBuffer) => void;
+    bufferData: (target: number, srcData: ArrayBuffer, usage: number) => void;
+    createFramebuffer: () => WebGLFramebuffer;
+    framebufferTexture2D: (target: number, attachment: number, textarget: number, texture: Texture, level: number) => void;
+    canvas: Canvas;
 }
 
 
@@ -199,29 +245,129 @@ const callback = (name: string, strParam1?: string, strParam2?: string, isSuppre
     cb(strParam1 ?? UNUSED, strParam2 ?? UNUSED);
 };
 
+let s2lProgram: WebGLProgram | null = null;
+let s2lVertexPositionNDC: number | null = null;
+let s2lVBO: WebGLBuffer | null = null;
+let s2lFBO: WebGLFramebuffer | null = null;
+let s2lTexture: Texture | null = null;
+let prevVideoWidth: number = 0;
+let prevVideoHeight: number = 0;
+
+const createS2lProgram = () => {
+    const vertexShaderCode = `
+        precision lowp float;
+        attribute vec2 vertexPositionNDC;
+        varying vec2 vTexCoords;
+        const vec2 scale = vec2(0.5, 0.5);
+        void main() {
+            vTexCoords = vertexPositionNDC * scale + scale;
+            gl_Position = vec4(vertexPositionNDC, 0.0, 1.0);
+        }`;
+
+    const fragmentShaderCode = `
+        precision mediump float;
+        uniform sampler2D colorMap;
+        varying vec2 vTexCoords;
+        vec4 toLinear(vec4 sRGB) {
+            vec3 c = sRGB.rgb;
+            return vec4(c * (c * (c * 0.305306011 + 0.682171111) + 0.012522878), sRGB.a);
+        }
+        void main() {
+            gl_FragColor = toLinear(texture2D(colorMap, vTexCoords));
+        }`;
+
+    const vertexShader = helper.GLctx.createShader(helper.GLctx.VERTEX_SHADER);
+    helper.GLctx.shaderSource(vertexShader, vertexShaderCode);
+    helper.GLctx.compileShader(vertexShader);
+
+    const fragmentShader = helper.GLctx.createShader(helper.GLctx.FRAGMENT_SHADER);
+    helper.GLctx.shaderSource(fragmentShader, fragmentShaderCode);
+    helper.GLctx.compileShader(fragmentShader);
+
+    s2lProgram = helper.GLctx.createProgram();
+    helper.GLctx.attachShader(s2lProgram, vertexShader);
+    helper.GLctx.attachShader(s2lProgram, fragmentShader);
+    helper.GLctx.linkProgram(s2lProgram);
+
+    s2lVertexPositionNDC = helper.GLctx.getAttribLocation(s2lProgram, "vertexPositionNDC");
+};
+
+const createS2lVBO = () => {
+    s2lVBO = helper.GLctx.createBuffer();
+    helper.GLctx.bindBuffer(helper.GLctx.ARRAY_BUFFER, s2lVBO);
+
+    var verts = [
+        1.0,  1.0,
+        -1.0,  1.0,
+        -1.0, -1.0,
+        -1.0, -1.0,
+        1.0, -1.0,
+        1.0,  1.0
+    ];
+    helper.GLctx.bufferData(helper.GLctx.ARRAY_BUFFER, new Float32Array(verts), helper.GLctx.STATIC_DRAW);
+};
+
+const createTexture = () => {
+    const texture = helper.GLctx.createTexture();
+    helper.GLctx.bindTexture(helper.GLctx.TEXTURE_2D, texture);
+    helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_WRAP_S, helper.GLctx.CLAMP_TO_EDGE);
+    helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_WRAP_T, helper.GLctx.CLAMP_TO_EDGE);
+    helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_MIN_FILTER, helper.GLctx.LINEAR);
+    return texture;
+};
+
 /**
  * Updates texture.
  *
- * @param element - HTMLMediaElement
+ * @param element - HTMLVideoElement
  * @param textureId - Native texture ID of Unity
  */
-const updateTexture = (element: HTMLMediaElement, textureId: number) => {
-  const prevTexture = helper.GL.textures[textureId];
-  helper.GLctx.deleteTexture(prevTexture);
+const updateTexture = (element: HTMLVideoElement, textureId: number) => {
+    const prevTexture = helper.GL.textures[textureId];
+    helper.GLctx.deleteTexture(prevTexture);
+    
+    helper.GLctx.pixelStorei(helper.GLctx.UNPACK_FLIP_Y_WEBGL, true);
 
-  const texture = helper.GLctx.createTexture();
-  texture.name = textureId;
-  helper.GL.textures[textureId] = texture;
+    const texture = createTexture();
+    texture.name = textureId;
+    helper.GL.textures[textureId] = texture;
+    helper.GLctx.texImage2D(helper.GLctx.TEXTURE_2D, 0, helper.GLctx.RGBA, element.videoWidth, element.videoHeight, 0, helper.GLctx.RGBA, helper.GLctx.UNSIGNED_BYTE, null);
+    
+    if (element.readyState >= element.HAVE_ENOUGH_DATA) {
+        if (s2lTexture === null || prevVideoHeight !== element.videoHeight || prevVideoWidth !== element.videoWidth) {
+            s2lTexture = createTexture();
+            prevVideoHeight = element.videoHeight;
+            prevVideoWidth = element.videoWidth;
+        } else {
+            helper.GLctx.bindTexture(helper.GLctx.TEXTURE_2D, s2lTexture);
+        }
+        helper.GLctx.texImage2D(helper.GLctx.TEXTURE_2D, 0, helper.GLctx.RGBA, helper.GLctx.RGBA, helper.GLctx.UNSIGNED_BYTE, element);
 
-  helper.GLctx.bindTexture(helper.GLctx.TEXTURE_2D, helper.GL.textures[textureId]);
-  helper.GLctx.pixelStorei(helper.GLctx.UNPACK_FLIP_Y_WEBGL, true);
-  helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_WRAP_S, helper.GLctx.CLAMP_TO_EDGE);
-  helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_WRAP_T, helper.GLctx.CLAMP_TO_EDGE);
-  helper.GLctx.texParameteri(helper.GLctx.TEXTURE_2D, helper.GLctx.TEXTURE_MIN_FILTER, helper.GLctx.LINEAR);
-  if (element.readyState >= element.HAVE_ENOUGH_DATA) {
-    helper.GLctx.texImage2D(helper.GLctx.TEXTURE_2D, 0, helper.GLctx.RGBA, helper.GLctx.RGBA, helper.GLctx.UNSIGNED_BYTE, element);
-  }
-  helper.GLctx.pixelStorei(helper.GLctx.UNPACK_FLIP_Y_WEBGL, false);
+        if (s2lProgram == null) {
+            createS2lProgram();
+        }
+        if (s2lVBO == null) {
+            createS2lVBO();
+        }
+        if (s2lFBO === null) {
+            s2lFBO = helper.GLctx.createFramebuffer();
+        }
+        helper.GLctx.bindFramebuffer(helper.GLctx.FRAMEBUFFER, s2lFBO);
+        helper.GLctx.framebufferTexture2D(helper.GLctx.FRAMEBUFFER, helper.GLctx.COLOR_ATTACHMENT0, helper.GLctx.TEXTURE_2D, texture, 0);
+
+        helper.GLctx.viewport(0, 0, element.videoWidth, element.videoHeight);
+        if (s2lProgram !== null && s2lVertexPositionNDC !== null && s2lVBO !== null) {
+            helper.GLctx.useProgram(s2lProgram);
+            helper.GLctx.bindBuffer(helper.GLctx.ARRAY_BUFFER, s2lVBO);
+            helper.GLctx.enableVertexAttribArray(s2lVertexPositionNDC);
+            helper.GLctx.vertexAttribPointer(s2lVertexPositionNDC, 2, helper.GLctx.FLOAT, false, 0, 0);
+            helper.GLctx.drawArrays(helper.GLctx.TRIANGLES, 0, 6);
+
+            helper.GLctx.viewport(0, 0, helper.GLctx.canvas.width, helper.GLctx.canvas.height);
+            helper.GLctx.bindFramebuffer(helper.GLctx.FRAMEBUFFER, null);
+        }
+    }
+    helper.GLctx.pixelStorei(helper.GLctx.UNPACK_FLIP_Y_WEBGL, false);
 };
 
 /**
