@@ -30,6 +30,9 @@ namespace Extreal.Integration.Web.Common.Video
             WebGLHelper.AddCallback(WithPrefix(nameof(CompletePreparation)), CompletePreparation);
             WebGLHelper.AddCallback(WithPrefix(nameof(ReceiveError)), ReceiveError);
 
+            var colorSpace = QualitySettings.activeColorSpace.ToString();
+            WebGLHelper.CallAction(WithPrefix("SetColorSpace"), colorSpace, instanceId);
+
             UniTask.Void(async () =>
             {
                 await UniTask.Yield();
