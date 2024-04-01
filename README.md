@@ -38,6 +38,10 @@ Listed above the scene played.
 - Video screen
   - Display the length of the video (video preparation is completed, get video length)
   - Ability to play video (play)
+    - Ability to play video with original colors when using gamma color space
+    - Ability to play video with original colors when using linear color space
+    - Ability to play correctly when looped 5 or more times
+    - Ability to play correctly even when switching to a video with a different resolution
   - Ability to pause video (pause)
   - Ability to stop video (stop)
   - Ability to adjust volume (set volume)
