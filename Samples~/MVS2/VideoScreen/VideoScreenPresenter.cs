@@ -17,6 +17,8 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
+        private bool isPlaying;
+
         public VideoScreenPresenter
         (
             VideoScreenView videoScreenView,
@@ -33,11 +35,21 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
 
         public void Initialize()
         {
+            const string initialVideoUrl = "http://localhost:3333/Panorama/testvideo.mp4";
+            videoScreenView.SetVideoUrl(initialVideoUrl);
+
+            videoScreenView.OnLoadButtonClicked
+                .Subscribe(url =>
+                {
+                    StopVideo();
+                    InitializeView(url);
+                })
+                .AddTo(disposables);
+
             videoScreenView.OnBackButtonClicked
                 .Subscribe(_ => stageNavigator.ReplaceAsync(StageName.TitleStage).Forget())
                 .AddTo(disposables);
 
-            var isPlaying = false;
             videoScreenView.OnPlayButtonClicked
                 .Subscribe(_ =>
                 {
@@ -56,12 +68,7 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
                 .AddTo(disposables);
 
             videoScreenView.OnStopButtonClicked
-                .Subscribe(_ =>
-                {
-                    videoPlayer.Stop();
-                    videoScreenView.SetPlayLabel("Play");
-                    isPlaying = false;
-                })
+                .Subscribe(_ => StopVideo())
                 .AddTo(disposables);
 
             videoScreenView.OnSeekButtonClicked
@@ -76,7 +83,7 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
                 .Subscribe(_ =>
                 {
                     var totalTime = (long)videoPlayer.Length;
-                    videoScreenView.SetTotalTime(totalTime);
+                    videoScreenView.SetPrepareCompleted(totalTime);
                 })
                 .AddTo(disposables);
 
@@ -85,9 +92,21 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
                 .AddTo(disposables);
 
             videoScreenView.Initialize();
+        }
 
-            videoPlayer.SetUrl(appState.VideoUrl);
+        private void InitializeView(string videoUrl)
+        {
+            videoScreenView.Initialize();
+
+            videoPlayer.SetUrl(videoUrl);
             videoPlayer.Prepare();
+        }
+
+        private void StopVideo()
+        {
+            videoPlayer.Stop();
+            videoScreenView.SetPlayLabel("Play");
+            isPlaying = false;
         }
 
         protected override void ReleaseManagedResources()
