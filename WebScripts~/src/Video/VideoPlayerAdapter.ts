@@ -5,8 +5,8 @@ class VideoPlayerAdapter {
   private videoPlayers = new Map<string, VideoPlayer>();
 
   public adapt = () => {
-    addAction(this.withPrefix("WebGLEVideoPlayer"), (instanceId) => {
-      this.videoPlayers.set(instanceId, new VideoPlayer(instanceId, {
+    addAction(this.withPrefix("WebGLEVideoPlayer"), (instanceId, colorSpace) => {
+      this.videoPlayers.set(instanceId, new VideoPlayer(instanceId, colorSpace, {
         onPrepareCompleted: () => callback(this.withPrefix("CompletePreparation"), instanceId),
         onErrorOccurred: (message) => callback(this.withPrefix("ReceiveError"), message, instanceId),
       }));
@@ -18,7 +18,6 @@ class VideoPlayerAdapter {
     addAction(this.withPrefix("Pause"), (instanceId) =>this.getVideoPlayer(instanceId).pause());
     addAction(this.withPrefix("Stop"), (instanceId) =>this.getVideoPlayer(instanceId).stop());
     addAction(this.withPrefix("UpdateTexture"), (textureId, instanceId) => this.getVideoPlayer(instanceId).updateTexture(Number.parseInt(textureId)), true);
-    addAction(this.withPrefix("SetColorSpace"), (colorSpace, instanceId) => this.getVideoPlayer(instanceId).setColorSpace(colorSpace === "Linear"));
     addFunction(this.withPrefix("GetLength"), (instanceId) =>this.getVideoPlayer(instanceId).getLength());
     addAction(this.withPrefix("SetTime"), (time, instanceId) =>this.getVideoPlayer(instanceId).setTime(Number.parseFloat(time)));
     addAction(this.withPrefix("SetAudioVolume"), (volume, instanceId) =>this.getVideoPlayer(instanceId).setAudioVolume(Number.parseFloat(volume)));

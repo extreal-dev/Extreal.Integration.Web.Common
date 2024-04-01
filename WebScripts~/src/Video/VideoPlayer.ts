@@ -10,7 +10,8 @@ class VideoPlayer {
   private element: HTMLVideoElement | null = null;
   private isLinear: boolean = true;
 
-  constructor(gameObjectId: string, callbacks: VideoPlayerCallbacks) {
+  constructor(gameObjectId: string, colorSpace: string, callbacks: VideoPlayerCallbacks) {
+    this.isLinear = colorSpace === "Linear";
     this.callbacks = callbacks;
     const videoElementId = this.getVideoElementId(gameObjectId);
 
@@ -91,8 +92,6 @@ class VideoPlayer {
     const elem = this.getVideoElement();
     updateTexture(elem, textureId, this.isLinear);
   };
-
-  public setColorSpace = (isLinear: boolean) => this.isLinear = isLinear;
 
   public getLength = () => {
     const elem = this.getVideoElement();
