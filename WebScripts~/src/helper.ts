@@ -250,8 +250,6 @@ let s2lVertexPositionNDC: number | null = null;
 let s2lVBO: WebGLBuffer | null = null;
 let s2lFBO: WebGLFramebuffer | null = null;
 let s2lTexture: Texture | null = null;
-let prevVideoWidth: number = 0;
-let prevVideoHeight: number = 0;
 
 const createS2lProgram = () => {
     const vertexShaderCode = `
@@ -284,16 +282,18 @@ const createS2lProgram = () => {
     helper.GLctx.shaderSource(fragmentShader, fragmentShaderCode);
     helper.GLctx.compileShader(fragmentShader);
 
-    s2lProgram = helper.GLctx.createProgram();
+    const s2lProgram = helper.GLctx.createProgram();
     helper.GLctx.attachShader(s2lProgram, vertexShader);
     helper.GLctx.attachShader(s2lProgram, fragmentShader);
     helper.GLctx.linkProgram(s2lProgram);
 
-    s2lVertexPositionNDC = helper.GLctx.getAttribLocation(s2lProgram, "vertexPositionNDC");
+    return s2lProgram;
 };
 
+const createS2lVertexPositionNDC = (s2lProgram: WebGLProgram) => helper.GLctx.getAttribLocation(s2lProgram, "vertexPositionNDC");
+
 const createS2lVBO = () => {
-    s2lVBO = helper.GLctx.createBuffer();
+    const s2lVBO = helper.GLctx.createBuffer();
     helper.GLctx.bindBuffer(helper.GLctx.ARRAY_BUFFER, s2lVBO);
 
     var verts = [
@@ -305,6 +305,8 @@ const createS2lVBO = () => {
         1.0,  1.0
     ];
     helper.GLctx.bufferData(helper.GLctx.ARRAY_BUFFER, new Float32Array(verts), helper.GLctx.STATIC_DRAW);
+
+    return s2lVBO;
 };
 
 const createTexture = () => {
@@ -321,7 +323,7 @@ const createTexture = () => {
  *
  * @param element - HTMLVideoElement
  * @param textureId - Native texture ID of Unity
- * @param isLinear - Is color space of Unity Linear or not
+ * @param isLinear - Whether Unity's color space is Linear or not
  */
 const updateTexture = (element: HTMLVideoElement, textureId: number, isLinear: boolean) => {
     const prevTexture = helper.GL.textures[textureId];
@@ -336,15 +338,6 @@ const updateTexture = (element: HTMLVideoElement, textureId: number, isLinear: b
 
     if (element.readyState >= element.HAVE_ENOUGH_DATA) {
         if (isLinear) {
-            if (prevVideoHeight !== element.videoHeight || prevVideoWidth !== element.videoWidth) {
-                if (s2lTexture !== null) {
-                    helper.GLctx.deleteTexture(s2lTexture);
-                    s2lTexture = null;
-                }
-                prevVideoHeight = element.videoHeight;
-                prevVideoWidth = element.videoWidth;
-            }
-
             if (s2lTexture === null) {
                 s2lTexture = createTexture();
             } else {
@@ -353,29 +346,30 @@ const updateTexture = (element: HTMLVideoElement, textureId: number, isLinear: b
             helper.GLctx.texImage2D(helper.GLctx.TEXTURE_2D, 0, helper.GLctx.RGBA, helper.GLctx.RGBA, helper.GLctx.UNSIGNED_BYTE, element);
 
             if (s2lProgram === null) {
-                createS2lProgram();
+                s2lProgram = createS2lProgram();
+            }
+            if (s2lVertexPositionNDC === null) {
+                s2lVertexPositionNDC = createS2lVertexPositionNDC(s2lProgram);
             }
             if (s2lVBO === null) {
-                createS2lVBO();
+                s2lVBO = createS2lVBO();
             }
             if (s2lFBO === null) {
                 s2lFBO = helper.GLctx.createFramebuffer();
             }
 
-            if (s2lProgram !== null && s2lVertexPositionNDC !== null && s2lVBO !== null) {
-                helper.GLctx.bindFramebuffer(helper.GLctx.FRAMEBUFFER, s2lFBO);
-                helper.GLctx.framebufferTexture2D(helper.GLctx.FRAMEBUFFER, helper.GLctx.COLOR_ATTACHMENT0, helper.GLctx.TEXTURE_2D, texture, 0);
+            helper.GLctx.bindFramebuffer(helper.GLctx.FRAMEBUFFER, s2lFBO);
+            helper.GLctx.framebufferTexture2D(helper.GLctx.FRAMEBUFFER, helper.GLctx.COLOR_ATTACHMENT0, helper.GLctx.TEXTURE_2D, texture, 0);
 
-                helper.GLctx.viewport(0, 0, element.videoWidth, element.videoHeight);
-                helper.GLctx.useProgram(s2lProgram);
-                helper.GLctx.bindBuffer(helper.GLctx.ARRAY_BUFFER, s2lVBO);
-                helper.GLctx.enableVertexAttribArray(s2lVertexPositionNDC);
-                helper.GLctx.vertexAttribPointer(s2lVertexPositionNDC, 2, helper.GLctx.FLOAT, false, 0, 0);
-                helper.GLctx.drawArrays(helper.GLctx.TRIANGLES, 0, 6);
+            helper.GLctx.viewport(0, 0, element.videoWidth, element.videoHeight);
+            helper.GLctx.useProgram(s2lProgram);
+            helper.GLctx.bindBuffer(helper.GLctx.ARRAY_BUFFER, s2lVBO);
+            helper.GLctx.enableVertexAttribArray(s2lVertexPositionNDC);
+            helper.GLctx.vertexAttribPointer(s2lVertexPositionNDC, 2, helper.GLctx.FLOAT, false, 0, 0);
+            helper.GLctx.drawArrays(helper.GLctx.TRIANGLES, 0, 6);
 
-                helper.GLctx.viewport(0, 0, helper.GLctx.canvas.width, helper.GLctx.canvas.height);
-                helper.GLctx.bindFramebuffer(helper.GLctx.FRAMEBUFFER, null);
-            }
+            helper.GLctx.viewport(0, 0, helper.GLctx.canvas.width, helper.GLctx.canvas.height);
+            helper.GLctx.bindFramebuffer(helper.GLctx.FRAMEBUFFER, null);
         } else {
             helper.GLctx.texImage2D(helper.GLctx.TEXTURE_2D, 0, helper.GLctx.RGBA, helper.GLctx.RGBA, helper.GLctx.UNSIGNED_BYTE, element);
         }
