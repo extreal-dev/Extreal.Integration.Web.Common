@@ -26,7 +26,8 @@ namespace Extreal.Integration.Web.Common.Video
             instanceId = Guid.NewGuid().ToString();
             Instances[instanceId] = this;
 
-            WebGLHelper.CallAction(WithPrefix(nameof(WebGLEVideoPlayer)), instanceId);
+            var colorSpace = QualitySettings.activeColorSpace.ToString();
+            WebGLHelper.CallAction(WithPrefix(nameof(WebGLEVideoPlayer)), instanceId, colorSpace);
             WebGLHelper.AddCallback(WithPrefix(nameof(CompletePreparation)), CompletePreparation);
             WebGLHelper.AddCallback(WithPrefix(nameof(ReceiveError)), ReceiveError);
 

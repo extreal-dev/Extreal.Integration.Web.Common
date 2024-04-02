@@ -38,6 +38,17 @@ Listed above the scene played.
 - Video screen
   - Display the length of the video (video preparation is completed, get video length)
   - Ability to play video (play)
+    - Ability to play video with the original colors when `Project Settings > Other Settings > Rendering > Color Space` is set to Gamma.
+    - Ability to play video with the original colors when `Project Settings > Other Settings > Rendering > Color Space` is set to Linear.
+    - Ability to play correctly when looped 5 or more times
+  - Ability to play correctly when switching to another video with a different resolution
+    <ol type="1">
+      <li>Play video</li>
+      <li>Stop video</li>
+      <li>Specify another video URL</li>
+      <li>Push Load button</li>
+      <li>Play</li>
+    </ol>
   - Ability to pause video (pause)
   - Ability to stop video (stop)
   - Ability to adjust volume (set volume)

@@ -9,6 +9,8 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
     public class VideoScreenView : MonoBehaviour
     {
         [SerializeField] private Button backButton;
+        [SerializeField] private TMP_InputField videoUrl;
+        [SerializeField] private Button loadButton;
         [SerializeField] private Button playButton;
         [SerializeField] private TMP_Text playButtonLabel;
         [SerializeField] private Button stopButton;
@@ -17,6 +19,8 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
         [SerializeField] private TMP_Text totalTime;
         [SerializeField] private Slider volume;
 
+        public IObservable<string> OnLoadButtonClicked
+            => loadButton.OnClickAsObservable().Select(_ => videoUrl.text).TakeUntilDestroy(this);
         public IObservable<Unit> OnBackButtonClicked
             => backButton.OnClickAsObservable().TakeUntilDestroy(this);
         public IObservable<Unit> OnPlayButtonClicked
@@ -37,7 +41,7 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
             seekButton.interactable = false;
         }
 
-        public void SetTotalTime(long totalTime)
+        public void SetPrepareCompleted(long totalTime)
         {
             this.totalTime.text = $"/ {totalTime} sec";
             playButton.interactable = true;
@@ -47,5 +51,8 @@ namespace Extreal.Integration.Web.Common.MVS2.VideoScreen
 
         public void SetPlayLabel(string text)
             => playButtonLabel.text = text;
+
+        public void SetVideoUrl(string url)
+            => videoUrl.text = url;
     }
 }

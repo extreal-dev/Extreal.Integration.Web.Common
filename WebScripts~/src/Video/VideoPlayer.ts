@@ -7,9 +7,11 @@ type VideoPlayerCallbacks = {
 
 class VideoPlayer {
   private callbacks: VideoPlayerCallbacks;
-  private element: HTMLMediaElement | null = null;
+  private element: HTMLVideoElement | null = null;
+  private isLinear: boolean = true;
 
-  constructor(gameObjectId: string, callbacks: VideoPlayerCallbacks) {
+  constructor(gameObjectId: string, colorSpace: string, callbacks: VideoPlayerCallbacks) {
+    this.isLinear = colorSpace === "Linear";
     this.callbacks = callbacks;
     const videoElementId = this.getVideoElementId(gameObjectId);
 
@@ -88,7 +90,7 @@ class VideoPlayer {
 
   public updateTexture = (textureId: number) => {
     const elem = this.getVideoElement();
-    updateTexture(elem, textureId);
+    updateTexture(elem, textureId, this.isLinear);
   };
 
   public getLength = () => {

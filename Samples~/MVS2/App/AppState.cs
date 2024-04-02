@@ -6,10 +6,6 @@ namespace Extreal.Integration.Web.Common.MVS2.App
 {
     public class AppState : DisposableBase
     {
-        public string VideoUrl { get; private set; }
-        public void SetVideoUrl(string videoUrl)
-            => VideoUrl = videoUrl;
-
         public IObservable<string> OnNotificationReceived => onNotificationReceived.AddTo(disposables);
         private readonly Subject<string> onNotificationReceived;
         public void Notify(string message) => onNotificationReceived.OnNext(message);

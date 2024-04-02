@@ -5,8 +5,8 @@ class VideoPlayerAdapter {
   private videoPlayers = new Map<string, VideoPlayer>();
 
   public adapt = () => {
-    addAction(this.withPrefix("WebGLEVideoPlayer"), (instanceId) => {
-      this.videoPlayers.set(instanceId, new VideoPlayer(instanceId, {
+    addAction(this.withPrefix("WebGLEVideoPlayer"), (instanceId, colorSpace) => {
+      this.videoPlayers.set(instanceId, new VideoPlayer(instanceId, colorSpace, {
         onPrepareCompleted: () => callback(this.withPrefix("CompletePreparation"), instanceId),
         onErrorOccurred: (message) => callback(this.withPrefix("ReceiveError"), message, instanceId),
       }));
