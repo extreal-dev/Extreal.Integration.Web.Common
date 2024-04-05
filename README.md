@@ -33,9 +33,9 @@ Listed above the scene played.
 ### MVS2 (video feature)
 
 - Title screen
-  - Ability to specify url (used when set url to VideoPlayer)
-  - Ability to go to video screen (initialize, set url, prepare)
+  - Ability to go to video screen (initialize)
 - Video screen
+  - Ability to specify url (set url, prepare)
   - Display the length of the video (video preparation is completed, get video length)
   - Ability to play video (play)
     - Ability to play video with the original colors when `Project Settings > Other Settings > Rendering > Color Space` is set to Gamma.
