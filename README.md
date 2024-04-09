@@ -50,6 +50,7 @@ Listed above the scene played.
       <li>Play</li>
     </ol>
   - Ability to pause video (pause)
+  - Ability to seek video (set time)
   - Ability to stop video (stop)
   - Ability to adjust volume (set volume)
   - Error notification if specified url is invalid (error is received)
